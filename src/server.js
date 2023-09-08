@@ -1,14 +1,16 @@
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config();
 const { PORT } = process.env;
 const app = express();
+app.use(cors());
 
 const encodedParams = new URLSearchParams();
 encodedParams.set('language', 'en_US');
-encodedParams.set('location', '297704');
+encodedParams.set('location_id', '297704');
 encodedParams.set('currency', 'EUR');
 encodedParams.set('offset', '0');
 
@@ -20,12 +22,7 @@ const options = {
     'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
     'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
   },
-  data: {
-    language: 'en_US',
-    location_id: '297704',
-    currency: 'USD',
-    offset: '0',
-  },
+  data: encodedParams.toString(),
 };
 
 app.get('/restaurants', async (req, res) => {
