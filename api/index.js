@@ -5,7 +5,7 @@ const cors = require('cors');
 
 dotenv.config();
 
-const { PORT } = process.env;
+const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 
@@ -74,6 +74,6 @@ app.get('/restaurants/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log('🚀 ~ file: server.js:24 ~ app.listen ~ PORT:', PORT);
+app.listen(port, () => {
+  console.log('🚀 ~ file: server.js:24 ~ app.listen ~ PORT:', port);
 });
