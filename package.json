@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "mock-server": "json-server --watch ./db.json --port 3001",
-    "test": "node src/server.js",
-    "start": "nodemon src/server.js",
+    "test": "node api/index.js",
+    "start": "node api/index.js",
     "dev": "concurrently \"npm run mock-server\" \"npm start\""
   },
   "author": "",

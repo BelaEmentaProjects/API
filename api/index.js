@@ -41,7 +41,7 @@ app.get('/restaurants', async (req, res) => {
     // If using mock data, directly fetch the data from the mock server
     if (USE_MOCK_DATA) {
       const response = await axios.get(url);
-      return res.json(response.data);
+      res.json(response.data);
     }
 
     // If not using mock data, first make a POST request to create the data followed by a GET request to retrieve the data.
