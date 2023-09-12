@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 
 const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
+console.log('USE_MOCK_DATA:', USE_MOCK_DATA); // Add this line at the top of your file
+const mockAPIurl =
+  'https://belaementa-apimockupdata-3f3cf48edfcd.herokuapp.com/restaurants';
+const realAPIurl = 'https://worldwide-restaurants.p.rapidapi.com/search';
 
 const encodedParams = new URLSearchParams();
 encodedParams.set('language', 'en_US');
@@ -19,63 +23,66 @@ encodedParams.set('offset', '0');
 
 // https://rapidapi.com/ptwebsolution/api/worldwide-restaurants
 
-const options = {
-  method: 'POST',
-  url: USE_MOCK_DATA
-    ? 'http://localhost:3001/results'
-    : 'https://worldwide-restaurants.p.rapidapi.com/search',
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded',
-    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-    'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
-  },
-  data: encodedParams.toString(),
-};
+app.use((req, res, next) => {
+  console.log('Incoming request:', req.method, req.path);
+  next();
+});
 
 app.get('/restaurants', async (req, res) => {
   try {
-    const url = USE_MOCK_DATA
-      ? 'https://api-jndgoncalves.vercel.app/api/json-server'
-      : 'https://worldwide-restaurants.p.rapidapi.com/search';
+    const url = USE_MOCK_DATA ? mockAPIurl : realAPIurl;
 
-    // If using mock data, directly fetch the data from the mock server
     if (USE_MOCK_DATA) {
       const response = await axios.get(url);
-      res.json(response.data);
+      console.log('Mock data response:', response.data);
+      return res.json(response.data);
     }
 
-    // If not using mock data, first make a POST request to create the data followed by a GET request to retrieve the data.
+    const options = {
+      method: 'POST',
+      url: realAPIurl,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
+      },
+      data: encodedParams.toString(),
+    };
+
     const postResponse = await axios.request(options);
+    console.log('POST response data:', postResponse.data);
     console.log('Location header:', postResponse.headers.location);
-    // Add this line to log the URL
+
     const getResponse = await axios.get(postResponse.headers.location);
-    res.json(getResponse.data);
+    console.log('GET response data:', getResponse.data);
+
+    return res.json(getResponse.data);
   } catch (err) {
     console.error('Error in /restaurants:', err);
-    res.status(500).send({ message: err.message, stack: err.stack });
+    return res.status(500).send({ message: err.message, stack: err.stack });
   }
 });
 
-app.get('/restaurants/:id', async (req, res) => {
-  try {
-    // Get the restaurant id from the request
-    const { id } = req.params;
+// app.get('/restaurants/:id', async (req, res) => {
+//   try {
+//     // Get the restaurant id from the request
+//     const { id } = req.params;
 
-    // Update the data payload to include the restaurant id
-    encodedParams.set('location_id', id);
+//     // Update the data payload to include the restaurant id
+//     encodedParams.set('location_id', id);
 
-    // Make the API request to fetch the restaurant details
-    const response = await axios.request({
-      ...options,
-      data: encodedParams.toString(),
-    });
-    // Send the restaurant details in the response
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching restaurant details: ', error);
-    res.status(500).json({ error: 'Server Error' });
-  }
-});
+//     // Make the API request to fetch the restaurant details
+//     const response = await axios.request({
+//       ...options,
+//       data: encodedParams.toString(),
+//     });
+//     // Send the restaurant details in the response
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Error fetching restaurant details: ', error);
+//     res.status(500).json({ error: 'Server Error' });
+//   }
+// });
 
 app.listen(port, () => {
   console.log('🚀 ~ file: server.js:24 ~ app.listen ~ PORT:', port);
