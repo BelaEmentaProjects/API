@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "mock-server": "json-server --watch ./db.json --port 3001",
-    "test": "node api/index.js",
     "start": "node api/index.js",
-    "dev": "concurrently \"npm run mock-server\" \"npm start\""
+    "test": "node api/index.js",
+    "dev": "concurrently \"npm run mock-server\" \"npm start\"",
+    "vercel-build": "cd api && npm install && cd ..",
+    "mock-server": "json-server --watch ./db.json --port 3001"
   },
   "author": "",
   "license": "ISC",
@@ -15,9 +16,11 @@
     "axios": "^1.5.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "json-server": "^0.17.3"
   },
   "devDependencies": {
+    "@vercel/node": "^3.0.4",
     "concurrently": "^8.2.1",
     "eslint": "^8.48.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -25,7 +28,6 @@
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^8.0.3",
-    "json-server": "^0.17.3",
     "lint-staged": "^14.0.1",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3"

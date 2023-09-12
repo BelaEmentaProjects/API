@@ -35,7 +35,7 @@ const options = {
 app.get('/restaurants', async (req, res) => {
   try {
     const url = USE_MOCK_DATA
-      ? 'http://localhost:3001/results'
+      ? 'https://api-jndgoncalves.vercel.app/api/json-server'
       : 'https://worldwide-restaurants.p.rapidapi.com/search';
 
     // If using mock data, directly fetch the data from the mock server
@@ -46,10 +46,13 @@ app.get('/restaurants', async (req, res) => {
 
     // If not using mock data, first make a POST request to create the data followed by a GET request to retrieve the data.
     const postResponse = await axios.request(options);
+    console.log('Location header:', postResponse.headers.location);
+    // Add this line to log the URL
     const getResponse = await axios.get(postResponse.headers.location);
     res.json(getResponse.data);
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error('Error in /restaurants:', err);
+    res.status(500).send({ message: err.message, stack: err.stack });
   }
 });
 
@@ -77,3 +80,5 @@ app.get('/restaurants/:id', async (req, res) => {
 app.listen(port, () => {
   console.log('🚀 ~ file: server.js:24 ~ app.listen ~ PORT:', port);
 });
+
+module.exports = app;
