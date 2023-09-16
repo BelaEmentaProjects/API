@@ -21,6 +21,17 @@ encodedParams.set('location_id', '297704');
 encodedParams.set('currency', 'EUR');
 encodedParams.set('offset', '0');
 
+const options = {
+  method: 'POST',
+  url: realAPIurl,
+  headers: {
+    'content-type': 'application/x-www-form-urlencoded',
+    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+    'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
+  },
+  data: encodedParams.toString(),
+};
+
 // https://rapidapi.com/ptwebsolution/api/worldwide-restaurants
 
 app.use((req, res, next) => {
@@ -37,17 +48,6 @@ app.get('/restaurants', async (req, res) => {
       console.log('Mock data response:', response.data);
       return res.json(response.data);
     }
-
-    const options = {
-      method: 'POST',
-      url: realAPIurl,
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-        'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
-      },
-      data: encodedParams.toString(),
-    };
 
     const postResponse = await axios.request(options);
     console.log('POST response data:', postResponse.data);
