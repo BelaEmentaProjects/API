@@ -7,7 +7,7 @@ dotenv.config();
 
 const port = process.env.PORT || 3000;
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true }));
 
 const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
 console.log('USE_MOCK_DATA:', USE_MOCK_DATA); // Add this line at the top of your file
@@ -63,26 +63,26 @@ app.get('/restaurants', async (req, res) => {
   }
 });
 
-// app.get('/restaurants/:id', async (req, res) => {
-//   try {
-//     // Get the restaurant id from the request
-//     const { id } = req.params;
+app.get('/restaurant/:restaurant_id', async (req, res) => {
+  try {
+    // Get the restaurant id from the request
+    const { restaurant_id } = req.params;
 
-//     // Update the data payload to include the restaurant id
-//     encodedParams.set('location_id', id);
+    // Update the data payload to include the restaurant id
+    encodedParams.set('location_id', restaurant_id);
 
-//     // Make the API request to fetch the restaurant details
-//     const response = await axios.request({
-//       ...options,
-//       data: encodedParams.toString(),
-//     });
-//     // Send the restaurant details in the response
-//     res.json(response.data);
-//   } catch (error) {
-//     console.error('Error fetching restaurant details: ', error);
-//     res.status(500).json({ error: 'Server Error' });
-//   }
-// });
+    // Make the API request to fetch the restaurant details
+    const response = await axios.request({
+      ...options,
+      data: encodedParams.toString(),
+    });
+    // Send the restaurant details in the response
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching restaurant details: ', error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
 
 app.listen(port, () => {
   console.log('🚀 ~ file: server.js:24 ~ app.listen ~ PORT:', port);
