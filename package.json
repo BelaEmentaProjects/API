@@ -6,11 +6,11 @@
   "scripts": {
     "start": "node api/index.js",
     "test": "node api/index.js",
-    "dev": "concurrently \"npm run mock-server\" \"npm start\"",
+    "dev": "nodemon api/index.js",
     "vercel-build": "cd api && npm install && cd ..",
     "mock-server": "json-server --watch ./db.json --port 3001"
   },
-  "author": "",
+  "author": "João Gonçalves",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.5.0",

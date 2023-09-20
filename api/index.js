@@ -9,75 +9,69 @@ const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors({ origin: true }));
 
-const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
-console.log('USE_MOCK_DATA:', USE_MOCK_DATA); // Add this line at the top of your file
-const mockAPIurl =
-  'https://belaementa-apimockupdata-3f3cf48edfcd.herokuapp.com/restaurants';
-const realAPIurl = 'https://worldwide-restaurants.p.rapidapi.com/search';
+// const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
+// console.log('USE_MOCK_DATA:', USE_MOCK_DATA); // Add this line at the top of your file
+// const mockAPIurl =
+//   'https://belaementa-apimockupdata-3f3cf48edfcd.herokuapp.com/restaurants';
 
-const encodedParams = new URLSearchParams();
-encodedParams.set('language', 'en_US');
-encodedParams.set('location_id', '297704');
-encodedParams.set('currency', 'EUR');
-encodedParams.set('offset', '0');
-
-const options = {
-  method: 'POST',
-  url: realAPIurl,
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded',
-    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-    'X-RapidAPI-Host': 'worldwide-restaurants.p.rapidapi.com',
-  },
-  data: encodedParams.toString(),
-};
-
-// https://rapidapi.com/ptwebsolution/api/worldwide-restaurants
+const googlePlacesApiKey = process.env.GOOGLE_PLACES_API_KEY;
+const placesAPIEndpoint =
+  'https://maps.googleapis.com/maps/api/place/textsearch/json';
 
 app.use((req, res, next) => {
   console.log('Incoming request:', req.method, req.path);
   next();
 });
 
+// Rout to get a list of restaurants based on the query parameter or a default query
 app.get('/restaurants', async (req, res) => {
   try {
-    const url = USE_MOCK_DATA ? mockAPIurl : realAPIurl;
+    // Retrieve the search query and page token from the query parameters
+    // Default query is 'restaurants in Lisbon'
+    const query = req.query.q || 'restaurants in Lisbon';
+    const pageToken = req.query.pageToken || null;
 
-    if (USE_MOCK_DATA) {
-      const response = await axios.get(url);
-      console.log('Mock data response:', response.data);
-      return res.json(response.data);
+    // Construct the API request URL with query and API key
+    // If a page is provided, it is included in the URL to fetch the next page
+    let url = `${placesAPIEndpoint}?query=${encodeURIComponent(
+      query,
+    )}&key=${googlePlacesApiKey}`;
+    if (pageToken) {
+      url += `&pagetoken=${encodeURIComponent(pageToken)}`;
     }
 
-    const postResponse = await axios.request(options);
-    console.log('POST response data:', postResponse.data);
-    console.log('Location header:', postResponse.headers.location);
+    const response = await axios.get(url);
 
-    const getResponse = await axios.get(postResponse.headers.location);
-    console.log('GET response data:', getResponse.data);
+    // Error handling, check response status
+    if (response.data.status === 'INVALID_REQUEST') {
+      return res
+        .status(400)
+        .send({ message: 'Invalid request. The page token may be invalid.' });
+    }
 
-    return res.json(getResponse.data);
+    if (response.data.status !== 'OK') {
+      return res
+        .status(500)
+        .send({ message: `Google Places API Error: ${response.data.status}` });
+    }
+
+    return res.json(response.data);
   } catch (err) {
-    console.error('Error in /restaurants:', err);
     return res.status(500).send({ message: err.message, stack: err.stack });
   }
 });
 
-app.get('/restaurant/:restaurant_id', async (req, res) => {
+const placeDetailsEndpoint =
+  'https://maps.googleapis.com/maps/api/place/details/json';
+
+app.get('/restaurant/:restaurantID', async (req, res) => {
   try {
     // Get the restaurant id from the request
-    const { restaurant_id } = req.params;
+    const { restaurantID } = req.params;
+    const url = `${placeDetailsEndpoint}?place_id=${restaurantID}&key=${googlePlacesApiKey}`;
 
-    // Update the data payload to include the restaurant id
-    encodedParams.set('location_id', restaurant_id);
-
-    // Make the API request to fetch the restaurant details
-    const response = await axios.request({
-      ...options,
-      data: encodedParams.toString(),
-    });
-    // Send the restaurant details in the response
-    res.json(response.data);
+    const response = await axios.get(url);
+    return res.json(response.data);
   } catch (error) {
     console.error('Error fetching restaurant details: ', error);
     res.status(500).json({ error: 'Server Error' });
