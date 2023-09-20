@@ -3,33 +3,36 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
+import { Request, Response, NextFunction } from 'express';
+
 dotenv.config();
 
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors({ origin: true }));
 
-// const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
-// console.log('USE_MOCK_DATA:', USE_MOCK_DATA); // Add this line at the top of your file
-// const mockAPIurl =
-//   'https://belaementa-apimockupdata-3f3cf48edfcd.herokuapp.com/restaurants';
-
 const googlePlacesApiKey = process.env.GOOGLE_PLACES_API_KEY;
 const placesAPIEndpoint =
   'https://maps.googleapis.com/maps/api/place/textsearch/json';
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction, err?: any) => {
   console.log('Incoming request:', req.method, req.path);
+  if (err) {
+    return res.status(500).send({ message: err.message, stack: err.stack });
+  }
+
   next();
 });
 
 // Rout to get a list of restaurants based on the query parameter or a default query
-app.get('/restaurants', async (req, res) => {
+app.get('/restaurants', async (req: Request, res: Response) => {
   try {
     // Retrieve the search query and page token from the query parameters
     // Default query is 'restaurants in Lisbon'
-    const query = req.query.q || 'restaurants in Lisbon';
-    const pageToken = req.query.pageToken || null;
+    const query: string = String(req.query.q || 'restaurants in Lisbon');
+    const pageToken: string | null = req.query.pageToken
+      ? String(req.query.pageToken)
+      : null;
 
     // Construct the API request URL with query and API key
     // If a page is provided, it is included in the URL to fetch the next page
@@ -56,7 +59,7 @@ app.get('/restaurants', async (req, res) => {
     }
 
     return res.json(response.data);
-  } catch (err) {
+  } catch (err: any) {
     return res.status(500).send({ message: err.message, stack: err.stack });
   }
 });
@@ -64,7 +67,7 @@ app.get('/restaurants', async (req, res) => {
 const placeDetailsEndpoint =
   'https://maps.googleapis.com/maps/api/place/details/json';
 
-app.get('/restaurant/:restaurantID', async (req, res) => {
+app.get('/restaurant/:restaurantID', async (req: Request, res: Response) => {
   try {
     // Get the restaurant id from the request
     const { restaurantID } = req.params;
@@ -72,9 +75,9 @@ app.get('/restaurant/:restaurantID', async (req, res) => {
 
     const response = await axios.get(url);
     return res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching restaurant details: ', error);
-    res.status(500).json({ error: 'Server Error' });
+  } catch (err: any) {
+    console.error('Error fetching restaurant details: ', err);
+    res.status(500).json({ err: 'Server Error' });
   }
 });
 
