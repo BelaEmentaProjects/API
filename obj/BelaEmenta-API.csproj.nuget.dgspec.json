@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zerot\\source\\repos\\BelaEmenta-API\\BelaEmenta-API.csproj": {}
+    "C:\\Users\\jgoncalves\\source\\repos\\BelaEmenta\\BelaEmenta-API\\BelaEmenta-API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zerot\\source\\repos\\BelaEmenta-API\\BelaEmenta-API.csproj": {
+    "C:\\Users\\jgoncalves\\source\\repos\\BelaEmenta\\BelaEmenta-API\\BelaEmenta-API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zerot\\source\\repos\\BelaEmenta-API\\BelaEmenta-API.csproj",
+        "projectUniqueName": "C:\\Users\\jgoncalves\\source\\repos\\BelaEmenta\\BelaEmenta-API\\BelaEmenta-API.csproj",
         "projectName": "BelaEmenta-API",
-        "projectPath": "C:\\Users\\zerot\\source\\repos\\BelaEmenta-API\\BelaEmenta-API.csproj",
-        "packagesPath": "C:\\Users\\zerot\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zerot\\source\\repos\\BelaEmenta-API\\obj\\",
+        "projectPath": "C:\\Users\\jgoncalves\\source\\repos\\BelaEmenta\\BelaEmenta-API\\BelaEmenta-API.csproj",
+        "packagesPath": "C:\\Users\\jgoncalves\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jgoncalves\\source\\repos\\BelaEmenta\\BelaEmenta-API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\zerot\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jgoncalves\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,16 +39,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
-              "target": "Package",
-              "version": "[1.19.5, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.4.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
